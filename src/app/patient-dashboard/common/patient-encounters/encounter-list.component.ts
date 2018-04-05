@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Encounter } from '../../../models/encounter.model';
 import { NgModel } from '@angular/forms';
+import { PatientEncounterProviderPipe } from './patient-encounter-provider.pipe';
 
 @Component({
   selector: 'encounter-list',
@@ -15,6 +16,7 @@ export class EncounterListComponent implements OnInit {
   @Input('isVisible') public isVisible: boolean;
   @Output() public onEncounterEdit = new EventEmitter();
   @Output() public isBusy = new EventEmitter();
+  @Output() public onShowPrettyEncounterViewer = new EventEmitter();
   @Output() public onEncounterObservations = new EventEmitter();
   @Input() public encounterTypes: any [];
   @Input() public showPagination: boolean = true;
@@ -37,6 +39,11 @@ export class EncounterListComponent implements OnInit {
     this.onEncounterObservations.emit(encounter);
     // console.log('Show observations', encounter);
 
+  }
+
+  public showEncounterViewer(encounterObj) {
+    this.isBusy.emit(true);
+    this.onShowPrettyEncounterViewer.emit(encounterObj);
   }
 
   public onEncounterTypeChange(selectedEncounterType) {

@@ -45,6 +45,24 @@ export class AuthenticationService {
 
     return request;
   }
+  public offlineAuthenticate(username: string, password: string) {
+
+    let credentials = {
+      username: username,
+      password: password
+    };
+
+    let enteredCredentials = btoa(username + ':' + password);
+    let storedCredentials = this.localStorageService.getItem(Constants.CREDENTIALS_KEY);
+    if (enteredCredentials === storedCredentials) {
+      this.sessionStorageService.setObject(Constants.USER_KEY,
+        this.localStorageService.getObject(Constants.USER_KEY));
+      sessionStorage.setItem(Constants.CREDENTIALS_KEY,
+        this.localStorageService.getItem(Constants.CREDENTIALS_KEY));
+      return true;
+    }
+    return false;
+  }
 
   public logOut() {
 
@@ -82,6 +100,7 @@ export class AuthenticationService {
 
     let base64 = btoa(username + ':' + password);
     this.sessionStorageService.setItem(Constants.CREDENTIALS_KEY, base64);
+    this.localStorageService.setItem(Constants.CREDENTIALS_KEY, base64);
   }
 
   private clearCredentials() {
@@ -91,6 +110,7 @@ export class AuthenticationService {
 
   private storeUser(user: any) {
     this.sessionStorageService.setObject(Constants.USER_KEY, user);
+    this.localStorageService.setObject(Constants.USER_KEY, user);
   }
 
   private clearUserDetails() {

@@ -13,6 +13,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class VisitEncountersListComponent implements OnInit, OnChanges {
 
     public title: string = 'Patient Visits';
+    public pretty: boolean;
     public mainArray: any = [];
     public visitsArray: any = [];
     public singleEncounterVisits: any = [];
@@ -24,7 +25,7 @@ export class VisitEncountersListComponent implements OnInit, OnChanges {
     public encounterFilterTypeArray: any = [];
     public selectedEncounter: string = '';
     public displayArray: any = [];
-    public onEncounterDetail: boolean = false;
+    public onEncounterDetail: number;
     public dateDesc: boolean = false;
     public visitDesc: boolean = false;
     public orderEncounterArray: any = [];
@@ -41,6 +42,10 @@ export class VisitEncountersListComponent implements OnInit, OnChanges {
     public users: any[];
     public selectedEncounterType: any;
     public v: any;
+    public busyIndicator: any = {
+        busy: false,
+        message: '...' // default message
+    };
 
     @Input() public encounters: Encounter[];
     @Input() public showVisitsObservations: boolean;
@@ -55,6 +60,10 @@ export class VisitEncountersListComponent implements OnInit, OnChanges {
     }
 
     public ngOnChanges() {
+        this.busyIndicator = {
+            busy: true,
+            'message': 'Loading Encounters..'
+        };
         if (this.encounters.length > 0) {
             this.groupEncountersByVisits(this.encounters);
         }
@@ -102,7 +111,32 @@ export class VisitEncountersListComponent implements OnInit, OnChanges {
                 form = encounter.form.name;
             }
 
-            let provider = encounter.provider != null ? encounter.provider.display : '';
+            let provider = '';
+
+            if (encounter.encounterProviders !== null) {
+                let encounterProvider = encounter.encounterProviders[0];
+                if (typeof encounterProvider !== 'undefined') {
+
+                    if (encounterProvider.provider !== null) {
+
+                          if (encounterProvider.provider.display !== null) {
+
+                            let displayMinusAttribute =
+                            encounterProvider.provider.display.split('-')[2];
+
+                            if (typeof displayMinusAttribute !== 'undefined') {
+
+                                provider = encounterProvider.provider.display.split('-')[2];
+
+                            }
+
+                          }
+
+                       }
+
+                }
+
+            }
 
             let encounterType = encounter.encounterType.display;
 
@@ -224,6 +258,11 @@ export class VisitEncountersListComponent implements OnInit, OnChanges {
 
         this.sortPatientEncounterTypes();
 
+        this.busyIndicator = {
+            busy: false,
+            'message': ''
+        };
+
         return this.displayArray;
 
     }
@@ -291,9 +330,18 @@ export class VisitEncountersListComponent implements OnInit, OnChanges {
         if (encounter) {
             // console.log('Show Encounter ' , encounter);
             this.selectedEncounter = encounter;
-            this.onEncounterDetail = true;
+            this.onEncounterDetail = Math.random();
+            this.pretty = false;
         }
 
+    }
+
+    public showEncounterViewer(encounterObj) {
+        if (encounterObj)  {
+            this.selectedEncounter = encounterObj;
+            this.onEncounterDetail = Math.random();
+            this.pretty = true;
+        }
     }
 
     public sortByProvider() {
