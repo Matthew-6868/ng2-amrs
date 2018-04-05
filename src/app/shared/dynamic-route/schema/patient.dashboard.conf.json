@@ -47,7 +47,7 @@
       ]
     },
     {
-      "programName": "HIV Treatment",
+      "programName": "Standard HIV Treatment",
       "programUuid": "781d85b0-1359-11df-a1f1-0026b9348838",
       "baseRoute": "781d85b0-1359-11df-a1f1-0026b9348838",
       "alias": "hiv",
@@ -170,6 +170,16 @@
       "programName": "DTG Pharmaco-Vigilance",
       "programUuid": "6ff0a6dc-ef8f-467a-86fc-9d9b263d8761",
       "baseRoute": "6ff0a6dc-ef8f-467a-86fc-9d9b263d8761",
+      "alias": "hiv",
+      "published": true,
+      "shared-routes-class": "hiv",
+      "requiresPatientEnrollment": true,
+      "routes": []
+    },
+    {
+      "programName": "HIV Exposed Infant",
+      "programUuid": "a8e7c30d-6d2f-401c-bb52-d4433689a36b",
+      "baseRoute": "a8e7c30d-6d2f-401c-bb52-d4433689a36b",
       "alias": "hiv",
       "published": true,
       "shared-routes-class": "hiv",

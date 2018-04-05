@@ -26,7 +26,8 @@ import { LabOrdersComponent } from './lab-orders/lab-orders.component';
 import { ClinicalNotesComponent } from './clinical-notes/clinical-notes.component';
 import { VisitComponent } from './visit/visit.component';
 import { EditVisitTypeComponent } from './visit/visit-details/edit-visit-type.component';
-import { PatientIdentifierComponent
+import {
+  PatientIdentifierComponent
 } from './patient-identifier/patient-identifier.component';
 import { AppFeatureAnalytics } from '../../shared/app-analytics/app-feature-analytics.service';
 import { PatientSearchService } from '../../patient-search/patient-search.service';
@@ -51,6 +52,7 @@ import { FormSchemaService } from './formentry/form-schema.service';
 import { UtilsModule } from '../../utils/utils.module';
 import { FormDataSourceService } from './formentry/form-data-source.service';
 import { FormentryComponent } from './formentry/formentry.component';
+import { PrettyEncounterViewerComponent } from './formentry/pretty-encounter-viewer.component';
 import { FormentryHelperService } from './formentry/formentry-helper.service';
 import { FormEntryModule } from 'ng2-openmrs-formentry';
 import { FromentryGuard } from './formentry/formentry.guard';
@@ -113,12 +115,14 @@ import {
 } from './visit-encounters/visit-encounters-list.component';
 import { VisitEncountersComponent } from './visit-encounters/visit-encounters.component';
 import { VisitEncountersPipe } from './visit-encounters/visit-encounters.pipe';
+import { PatientEncounterProviderPipe } from './patient-encounters/patient-encounter-provider.pipe';
 import {
   OrderByAlphabetPipe
 } from './visit-encounters/visit-encounter.component.order.pipe';
 import { OrderByEncounterTimeAscPipe } from './visit-encounters/orderByEncounterTime.pipe';
 import { EncounterTypeFilter } from
   './patient-encounters/encounter-list.component.filterByEncounterType.pipe';
+import { ZeroVlPipe } from './../../shared/pipes/zero-vl-pipe';
 import { HivCareLibModule } from '../../hiv-care-lib/hiv-care-lib.module';
 import { LabOrderSearchModule } from '../../lab-order-search/lab-order-search.module';
 import { PatientSearchModule } from '../../patient-search/patient-search.module';
@@ -134,6 +138,11 @@ import { VisitSummaryComponent } from './visit/visit-summary/visit-summary.compo
 import { UnenrollPatientProgramsComponent } from './programs/unenroll-patient-programs.component';
 import { ProgramTransferCareModule } from '../programs/transfer-care/transfer-care.module';
 import { FormUpdaterService } from './formentry/form-updater.service';
+
+import { HttpModule, Http, XHRBackend, RequestOptions } from '@angular/http';
+import { Router } from '@angular/router';
+import { SessionStorageService } from '../../utils/session-storage.service';
+import { HttpClient } from '../../shared/services/http-client.service';
 
 @NgModule({
   imports: [
@@ -198,6 +207,7 @@ import { FormUpdaterService } from './formentry/form-updater.service';
     AddressComponent,
     PatientDemographicsComponent,
     FormentryComponent,
+    PrettyEncounterViewerComponent,
     LabTestOrdersComponent,
     DraftedFormNavComponent,
     TodaysVitalsComponent,
@@ -223,6 +233,8 @@ import { FormUpdaterService } from './formentry/form-updater.service';
     VisitStarterComponent,
     UnenrollPatientProgramsComponent,
     VisitEncountersPipe,
+    PatientEncounterProviderPipe,
+    ZeroVlPipe,
     OrderByAlphabetPipe,
     OrderByEncounterTimeAscPipe,
     EncounterTypeFilter],
@@ -248,6 +260,7 @@ import { FormUpdaterService } from './formentry/form-updater.service';
     AddressComponent,
     PatientDemographicsComponent,
     FormentryComponent,
+    PrettyEncounterViewerComponent,
     LabTestOrdersComponent,
     DraftedFormNavComponent,
     TodaysVitalsComponent,
@@ -272,9 +285,11 @@ import { FormUpdaterService } from './formentry/form-updater.service';
     VisitStarterComponent,
     UnenrollPatientProgramsComponent,
     VisitEncountersPipe,
+    PatientEncounterProviderPipe,
     OrderByAlphabetPipe,
     OrderByEncounterTimeAscPipe,
-    EncounterTypeFilter],
+    EncounterTypeFilter,
+    ZeroVlPipe],
   providers: [
     FormUpdaterService,
     PatientEncounterService,
@@ -300,10 +315,18 @@ import { FormUpdaterService } from './formentry/form-updater.service';
     PatientRelationshipService,
     HivPatientClinicalSummaryService,
     DatePipe,
+    ZeroVlPipe,
     PatientIdentifierService,
     PatientRelationshipTypeService,
     FormentryReferralsHandlerService,
     PatientCareStatusResourceService,
+    {
+      provide: Http,
+      useFactory: (xhrBackend: XHRBackend, requestOptions: RequestOptions,
+                   router: Router, sessionStorageService: SessionStorageService) =>
+        new HttpClient(xhrBackend, requestOptions, router, sessionStorageService),
+      deps: [XHRBackend, RequestOptions, Router, SessionStorageService]
+    },
     TodayVisitService],
 })
 export class PatientDashboardCommonModule { }

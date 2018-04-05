@@ -126,10 +126,52 @@ export class LoginComponent implements OnInit {
           }
         },
         (error) => {
-          this.loginFailure.emit(false);
           if (error.status === 0) {
-            this.error = Messages.INTERNET_CONNECTION_ERROR;
+            if (this.authenticationService.offlineAuthenticate(username, password)) {
+              this.loginSuccess.emit('true');
+              /// update forms in cache ////
+              let lastChecked = this.formUpdaterService.getDateLastChecked();
+              if (lastChecked !== new Date().toDateString()) {
+                this.formUpdaterService.getUpdatedForms(); }
+
+              if (currentRoute && currentRoute.indexOf('login') !== -1) {
+
+                let previousRoute: string = sessionStorage.getItem('previousRoute');
+                let userDefaultLocation = this.userDefaultPropertiesService
+                  .getCurrentUserDefaultLocation();
+
+                if (previousRoute && previousRoute.length > 1) {
+                  if (previousRoute && previousRoute.indexOf('login') !== -1) {
+                    this.router.navigate(['/']);
+                  } else {
+                    this.router.navigate([previousRoute]);
+                  }
+                } else {
+                  this.router.navigate(['/']);
+                }
+                if (userDefaultLocation === null ||
+                  userDefaultLocation === undefined ||
+                  this.shouldSetLocation) {
+                  this.localStorageService.setItem('lastLoginDate', (new Date())
+                    .toLocaleDateString());
+                  if (this.shouldRedirect) {
+                    this.router.navigate(['/user-default-properties', {confirm: 1}]);
+                  } else {
+                    this.router.navigate(['/user-default-properties']);
+                  }
+
+                } else {
+                  this.router.navigate(['/']);
+                }
+              }
+            } else if (this.authenticationService.offlineAuthenticate(username, password)
+              === false) {
+              this.loginFailure.emit(false);
+              this.error = Messages.WRONG_USERNAME_PASSWORD + ' (OFFLINE)';
+              this.clearAndFocusPassword();
+            }
           } else {
+            this.loginFailure.emit(false);
             this.error = error.statusText;
           }
         });
