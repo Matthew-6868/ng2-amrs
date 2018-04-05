@@ -62,6 +62,7 @@ describe('AuthenticationService Unit Tests', () => {
         });
         connection.mockRespond(new Response(options));
       });
+      let response : Response
 
       authenticationService.authenticate(username, password)
         .subscribe((response) => {
