@@ -45,6 +45,7 @@ export class AuthenticationService {
 
     return request;
   }
+
   public offlineAuthenticate(username: string, password: string) {
 
     let credentials = {
@@ -57,7 +58,7 @@ export class AuthenticationService {
     if (enteredCredentials === storedCredentials) {
       this.sessionStorageService.setObject(Constants.USER_KEY,
         this.localStorageService.getObject(Constants.USER_KEY));
-      sessionStorage.setItem(Constants.CREDENTIALS_KEY,
+      this.sessionStorageService.setItem(Constants.CREDENTIALS_KEY,
         this.localStorageService.getItem(Constants.CREDENTIALS_KEY));
       return true;
     }
