@@ -11,6 +11,7 @@ import { AppSettingsService } from '../app-settings';
 import { SessionService } from '../openmrs-api/session.service';
 import { LocalStorageService } from '../utils/local-storage.service';
 import { SessionStorageService } from '../utils/session-storage.service';
+import { OnlineTrackerService } from '../online-tracker/online-tracker.service';
 
 // Load the implementations that should be tested
 import { LoginComponent } from './login.component';
@@ -60,7 +61,8 @@ describe('LoginComponent Unit Tests', () => {
       FormSchemaService,
       FormUpdaterService,
       FormOrderMetaDataService,
-      MdSnackBar
+      MdSnackBar,
+      OnlineTrackerService
     ],
     imports: [
       RouterTestingModule,
