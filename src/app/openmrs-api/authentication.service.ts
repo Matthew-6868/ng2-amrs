@@ -26,6 +26,7 @@ export class AuthenticationService {
     };
 
     let request = this.sessionService.getSession(credentials);
+
     request
       .subscribe(
       (response: Response) => {
