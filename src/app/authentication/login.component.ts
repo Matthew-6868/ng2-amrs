@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
 
   public error: string;
   public shouldRedirect: boolean = false;
-  private _isStoreCredentials: boolean = false;
+  public _isStoreCredentials: boolean = false;
   public busy: Subscription;
 
   @ViewChildren('password') public passwordField;
