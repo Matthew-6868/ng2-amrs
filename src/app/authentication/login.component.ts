@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
 
   public error: string;
   public shouldRedirect: boolean = false;
+  public _isStoreCredentials: boolean = false;
   public busy: Subscription;
 
   @ViewChildren('password') public passwordField;
@@ -195,4 +196,11 @@ export class LoginComponent implements OnInit {
     this.passwordField.first.nativeElement.value = '';
   }
 
+  get isStoreCredentials(): boolean {
+    return this._isStoreCredentials;
+  }
+
+  set isStoreCredentials(value: boolean) {
+    this._isStoreCredentials = value;
+  }
 }
