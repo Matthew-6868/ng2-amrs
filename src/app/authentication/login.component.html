@@ -20,6 +20,10 @@
         </div>
         <div class="clear"></div>
       </form>
+      <div *ngIf="showCheckbox">
+        <input type="checkbox" id="storeCredentialsOfflineCheckbox">
+        <label for="storeCredentialsOfflineCheckbox">Store credentials for offline use</label>
+      </div>
       <div class="error">{{error}}</div>
       <div [ngBusy]="busy"></div>
     </div>
