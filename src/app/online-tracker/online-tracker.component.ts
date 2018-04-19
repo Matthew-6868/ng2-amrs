@@ -16,7 +16,7 @@ export class OnlineTrackerComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
-    this.timer = Observable.timer(1000, 30000);
+    this.timer = Observable.timer(1000, 3000);
     this.timer
       .takeWhile(() => this.subscribeToTimer)
       .subscribe((t) => this.getOnlineStatus());
