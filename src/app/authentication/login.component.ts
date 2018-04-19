@@ -1,5 +1,5 @@
 import {
-  Component, Output, EventEmitter, Input, ViewChildren, OnInit,
+  Component, Output, EventEmitter, Input, ViewChildren, OnInit, OnDestroy,
   ViewEncapsulation
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -31,7 +31,7 @@ import { OnlineTrackerService } from '../online-tracker/online-tracker.service';
   styleUrls: ['./login.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   @Output() public loginSuccess = new EventEmitter();
   @Output() public loginFailure = new EventEmitter();
@@ -42,6 +42,9 @@ export class LoginComponent implements OnInit {
   public shouldRedirect: boolean = false;
   public _isStoreCredentials: boolean = false;
   public busy: Subscription;
+  public timer: Observable<any>;
+  public subscribeToTimer: boolean = true;
+  public showCheckbox: boolean = false;
 
   @ViewChildren('password') public passwordField;
 
@@ -68,6 +71,22 @@ export class LoginComponent implements OnInit {
         this.appSettingsService.setOpenmrsServer(urlObject['amrsUrl']);
       }
     }
+    this.timer = Observable.timer(1000, 3000);
+    this.timer.takeWhile(() => this.subscribeToTimer).subscribe((t) => this.getOnlineStatus());
+  }
+
+  public ngOnDestroy() {
+    this.subscribeToTimer = false;
+  }
+
+  public getOnlineStatus() {
+    this.onlineTrackerService.updateOnlineStatus()
+      .then((results: any) => {
+        this.showCheckbox = results;
+      }).catch((error) => {
+      this.showCheckbox = false;
+      console.error('ERROR: GetOnline Status Error', error);
+    });
   }
 
   public getServerTemplates(): Array<object> {
