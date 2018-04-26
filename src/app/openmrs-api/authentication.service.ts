@@ -46,6 +46,34 @@ export class AuthenticationService {
     return request;
   }
 
+  public authenticate(username: string, password: string, saveOfflineCreds: boolean) {
+
+    let credentials = {
+      username: username,
+      password: password
+    };
+
+    let request = this.sessionService.getSession(credentials);
+
+    request
+      .subscribe(
+        (response: Response) => {
+
+          let data = response.json();
+
+          if (data.authenticated) {
+
+            this.setAndSaveCredentials(username, password, true);
+
+            // store logged in user details in session storage
+            let user = data.user;
+            this.storeUser(user);
+          }
+        });
+
+    return request;
+  }
+
   public offlineAuthenticate(username: string, password: string) {
 
     let credentials = {
@@ -98,12 +126,16 @@ export class AuthenticationService {
   }
 
   private setCredentials(username: string, password: string) {
-
     let base64 = btoa(username + ':' + password);
     this.sessionStorageService.setItem(Constants.CREDENTIALS_KEY, base64);
-    this.localStorageService.setItem(Constants.CREDENTIALS_KEY, base64);
   }
-
+  private setAndSaveCredentials(username: string, password: string, isSaveOffline: boolean) {
+    if (isSaveOffline) {
+      let base64 = btoa(username + ':' + password);
+      this.localStorageService.setItem(Constants.CREDENTIALS_KEY, base64);
+    }
+    this.setCredentials(username, password);
+  }
   private clearCredentials() {
 
     this.sessionStorageService.remove(Constants.CREDENTIALS_KEY);
