@@ -40,11 +40,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   public error: string;
   public shouldRedirect: boolean = false;
-  public _isStoreCredentials: boolean = false;
   public busy: Subscription;
   public timer: Observable<any>;
   public subscribeToTimer: boolean = true;
   public showCheckbox: boolean = false;
+  public storeCredentialsCheckboxChecked: boolean;
+  public checkBoxElement = document.getElementById('storeCredentialsOfflineCheckbox');
+  public checkBox = this.checkBoxElement as HTMLInputElement;
 
   @ViewChildren('password') public passwordField;
 
@@ -102,6 +104,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     let currentRoute = window.location.toString();
 
     if (this.onlineTrackerService.isOnline) {
+      if (this.checkBox.checked === true) {
+        this.storeCredentialsCheckboxChecked = true;
+      }
       this.busy = this.authenticationService.authenticate(username, password)
         .subscribe(
           (response: Response) => {
@@ -213,13 +218,5 @@ export class LoginComponent implements OnInit, OnDestroy {
   public clearAndFocusPassword( ) {
     this.passwordField.first.nativeElement.focus();
     this.passwordField.first.nativeElement.value = '';
-  }
-
-  get isStoreCredentials(): boolean {
-    return this._isStoreCredentials;
-  }
-
-  set isStoreCredentials(value: boolean) {
-    this._isStoreCredentials = value;
   }
 }
