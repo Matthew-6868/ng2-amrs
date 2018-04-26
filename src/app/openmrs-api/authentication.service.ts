@@ -11,6 +11,8 @@ import { CookieService } from 'ngx-cookie';
 @Injectable()
 export class AuthenticationService {
 
+  private saveOfflineCreds: boolean = false;
+
   constructor(
     private appSettingsService: AppSettingsService,
     private localStorageService: LocalStorageService,
@@ -35,7 +37,11 @@ export class AuthenticationService {
 
         if (data.authenticated) {
 
-          this.setCredentials(username, password);
+          if (!this.saveOfflineCreds) {
+            this.setCredentials(username, password);
+          } else {
+            this.setAndSaveCredentials(username, password, true);
+          }
 
           // store logged in user details in session storage
           let user = data.user;
@@ -44,6 +50,12 @@ export class AuthenticationService {
       });
 
     return request;
+  }
+
+  public authenticateAndSave(username: string, password: string, saveOfflineCreds: boolean) {
+
+    this.saveOfflineCreds = saveOfflineCreds;
+    this.authenticate(username, password);
   }
 
   public offlineAuthenticate(username: string, password: string) {
@@ -98,12 +110,16 @@ export class AuthenticationService {
   }
 
   private setCredentials(username: string, password: string) {
-
     let base64 = btoa(username + ':' + password);
     this.sessionStorageService.setItem(Constants.CREDENTIALS_KEY, base64);
-    this.localStorageService.setItem(Constants.CREDENTIALS_KEY, base64);
   }
-
+  private setAndSaveCredentials(username: string, password: string, isSaveOffline: boolean) {
+    if (isSaveOffline) {
+      let base64 = btoa(username + ':' + password);
+      this.localStorageService.setItem(Constants.CREDENTIALS_KEY, base64);
+    }
+    this.setCredentials(username, password);
+  }
   private clearCredentials() {
 
     this.sessionStorageService.remove(Constants.CREDENTIALS_KEY);
