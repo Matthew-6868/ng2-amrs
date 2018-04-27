@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public timer: Observable<any>;
   public subscribeToTimer: boolean = true;
   public showCheckbox: boolean = false;
-  public storeCredentialsCheckboxChecked: boolean;
+  public storeCredentials: boolean;
   public checkBoxElement = document.getElementById('storeCredentialsOfflineCheckbox');
   public checkBox = this.checkBoxElement as HTMLInputElement;
 
@@ -105,59 +105,113 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     if (this.onlineTrackerService.isOnline) {
       if (this.checkBox.checked === true) {
-        this.storeCredentialsCheckboxChecked = true;
+        this.storeCredentials = true;
       }
-      this.busy = this.authenticationService.authenticate(username, password)
-        .subscribe(
-          (response: Response) => {
-            let data = response.json();
+      if (this.storeCredentials === true) {
+        this.busy = this.authenticationService.authenticateAndSave(username, password, true)
+          .subscribe(
+            (response: Response) => {
+              let data = response.json();
 
-            if (data.authenticated) {
+              if (data.authenticated) {
 
-              /// update forms in cache ////
-              let lastChecked = this.formUpdaterService.getDateLastChecked();
-              if (lastChecked !== new Date().toDateString()) {
-                this.formUpdaterService.getUpdatedForms(); }
+                /// update forms in cache ////
+                let lastChecked = this.formUpdaterService.getDateLastChecked();
+                if (lastChecked !== new Date().toDateString()) {
+                  this.formUpdaterService.getUpdatedForms(); }
 
-              if (currentRoute && currentRoute.indexOf('login') !== -1) {
+                if (currentRoute && currentRoute.indexOf('login') !== -1) {
 
-                let previousRoute: string = sessionStorage.getItem('previousRoute');
-                let userDefaultLocation = this.userDefaultPropertiesService
-                  .getCurrentUserDefaultLocation();
+                  let previousRoute: string = sessionStorage.getItem('previousRoute');
+                  let userDefaultLocation = this.userDefaultPropertiesService
+                    .getCurrentUserDefaultLocation();
 
-                if (previousRoute && previousRoute.length > 1) {
-                  if (previousRoute && previousRoute.indexOf('login') !== -1) {
+                  if (previousRoute && previousRoute.length > 1) {
+                    if (previousRoute && previousRoute.indexOf('login') !== -1) {
+                      this.router.navigate(['/']);
+                    } else {
+                      this.router.navigate([previousRoute]);
+                    }
+                  } else {
                     this.router.navigate(['/']);
-                  } else {
-                    this.router.navigate([previousRoute]);
                   }
-                } else {
-                  this.router.navigate(['/']);
-                }
-                if (userDefaultLocation === null ||
-                  userDefaultLocation === undefined ||
-                  this.shouldSetLocation) {
-                  this.localStorageService.setItem('lastLoginDate', (new Date())
-                    .toLocaleDateString());
-                  if (this.shouldRedirect) {
-                    this.router.navigate(['/user-default-properties', {confirm: 1}]);
-                  } else {
-                    this.router.navigate(['/user-default-properties']);
-                  }
+                  if (userDefaultLocation === null ||
+                    userDefaultLocation === undefined ||
+                    this.shouldSetLocation) {
+                    this.localStorageService.setItem('lastLoginDate', (new Date())
+                      .toLocaleDateString());
+                    if (this.shouldRedirect) {
+                      this.router.navigate(['/user-default-properties', {confirm: 1}]);
+                    } else {
+                      this.router.navigate(['/user-default-properties']);
+                    }
 
-                } else {
-                  this.router.navigate(['/']);
+                  } else {
+                    this.router.navigate(['/']);
+                  }
                 }
+              } else {
+                this.error = Messages.WRONG_USERNAME_PASSWORD;
+                this.clearAndFocusPassword();
               }
-            } else {
-              this.error = Messages.WRONG_USERNAME_PASSWORD;
-              this.clearAndFocusPassword();
-            }
-          },
-          (error) => {
-            this.loginFailure.emit(false);
-            this.error = error.statusText;
-          });
+            },
+            (error) => {
+              this.loginFailure.emit(false);
+              this.error = error.statusText;
+            });
+      } else {
+        this.busy = this.authenticationService.authenticate(username, password)
+          .subscribe(
+            (response: Response) => {
+              let data = response.json();
+
+              if (data.authenticated) {
+
+                /// update forms in cache ////
+                let lastChecked = this.formUpdaterService.getDateLastChecked();
+                if (lastChecked !== new Date().toDateString()) {
+                  this.formUpdaterService.getUpdatedForms(); }
+
+                if (currentRoute && currentRoute.indexOf('login') !== -1) {
+
+                  let previousRoute: string = sessionStorage.getItem('previousRoute');
+                  let userDefaultLocation = this.userDefaultPropertiesService
+                    .getCurrentUserDefaultLocation();
+
+                  if (previousRoute && previousRoute.length > 1) {
+                    if (previousRoute && previousRoute.indexOf('login') !== -1) {
+                      this.router.navigate(['/']);
+                    } else {
+                      this.router.navigate([previousRoute]);
+                    }
+                  } else {
+                    this.router.navigate(['/']);
+                  }
+                  if (userDefaultLocation === null ||
+                    userDefaultLocation === undefined ||
+                    this.shouldSetLocation) {
+                    this.localStorageService.setItem('lastLoginDate', (new Date())
+                      .toLocaleDateString());
+                    if (this.shouldRedirect) {
+                      this.router.navigate(['/user-default-properties', {confirm: 1}]);
+                    } else {
+                      this.router.navigate(['/user-default-properties']);
+                    }
+
+                  } else {
+                    this.router.navigate(['/']);
+                  }
+                }
+              } else {
+                this.error = Messages.WRONG_USERNAME_PASSWORD;
+                this.clearAndFocusPassword();
+              }
+            },
+            (error) => {
+              this.loginFailure.emit(false);
+              this.error = error.statusText;
+            });
+      }
     } else {
       if (this.authenticationService.offlineAuthenticate(username, password)) {
         this.loginSuccess.emit('true');

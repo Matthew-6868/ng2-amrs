@@ -55,7 +55,7 @@ export class AuthenticationService {
   public authenticateAndSave(username: string, password: string, saveOfflineCreds: boolean) {
 
     this.saveOfflineCreds = saveOfflineCreds;
-    this.authenticate(username, password);
+    return this.authenticate(username, password);
   }
 
   public offlineAuthenticate(username: string, password: string) {
