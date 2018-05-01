@@ -24,6 +24,7 @@ import { Observable } from 'rxjs/Observable';
 import { MdSnackBar } from '@angular/material';
 import * as _ from 'lodash';
 import { OnlineTrackerService } from '../online-tracker/online-tracker.service';
+import { Checkbox } from 'primeng/primeng';
 
 @Component({
   selector: 'login',
@@ -46,7 +47,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public showCheckbox: boolean = false;
   public storeCredentials: boolean;
   public checkBoxElement = document.getElementById('storeCredentialsOfflineCheckbox');
-  public checkBox = this.checkBoxElement as HTMLInputElement;
+  public checkBox= this.checkBoxElement as HTMLInputElement;
 
   @ViewChildren('password') public passwordField;
 
@@ -104,8 +105,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     let currentRoute = window.location.toString();
 
     if (this.onlineTrackerService.isOnline) {
-      if (this.checkBox.checked === true) {
-        this.storeCredentials = true;
+      if (this.checkBox.type.toLowerCase() === 'checkbox') {
+        if (this.checkBox.checked === true) {
+          this.storeCredentials = true;
+        }
       }
       if (this.storeCredentials === true) {
         this.busy = this.authenticationService.authenticateAndSave(username, password, true)
