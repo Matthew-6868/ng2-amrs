@@ -20,7 +20,7 @@ export class AuthenticationService {
     private sessionService: SessionService,
     private _cookieService: CookieService) { }
 
-  public authenticate(username: string, password: string) {
+  public authenticate(username: string, password: string, saveOfflineCreds: boolean) {
 
     let credentials = {
       username: username,
@@ -31,23 +31,23 @@ export class AuthenticationService {
 
     request
       .subscribe(
-      (response: Response) => {
+        (response: Response) => {
 
-        let data = response.json();
+          let data = response.json();
 
-        if (data.authenticated) {
+          if (data.authenticated) {
 
-          if (!this.saveOfflineCreds) {
-            this.setCredentials(username, password);
-          } else {
-            this.setAndSaveCredentials(username, password, true);
+            if (!this.saveOfflineCreds) {
+              this.setCredentials(username, password);
+            } else {
+              this.setAndSaveCredentials(username, password, true);
+            }
+
+            // store logged in user details in session storage
+            let user = data.user;
+            this.storeUser(user);
           }
-
-          // store logged in user details in session storage
-          let user = data.user;
-          this.storeUser(user);
-        }
-      });
+        });
 
     return request;
   }
@@ -55,7 +55,7 @@ export class AuthenticationService {
   public authenticateAndSave(username: string, password: string, saveOfflineCreds: boolean) {
 
     this.saveOfflineCreds = saveOfflineCreds;
-    this.authenticate(username, password);
+    this.authenticate(username, password, true);
   }
 
   public offlineAuthenticate(username: string, password: string) {
@@ -83,14 +83,14 @@ export class AuthenticationService {
 
     response
       .subscribe(
-      (res: Response) => {
+        (res: Response) => {
 
-        this.clearSessionCache();
-      },
-      (error: Error) => {
+          this.clearSessionCache();
+        },
+        (error: Error) => {
 
-        this.clearSessionCache();
-      });
+          this.clearSessionCache();
+        });
 
     return response;
   }
@@ -103,9 +103,9 @@ export class AuthenticationService {
   // This will clear motd alert cookies set  at every log in
   public clearLoginAlertCookies() {
 
-      let cookieKey = 'motdLoginCookie';
+    let cookieKey = 'motdLoginCookie';
 
-      this._cookieService.remove(cookieKey);
+    this._cookieService.remove(cookieKey);
 
   }
 

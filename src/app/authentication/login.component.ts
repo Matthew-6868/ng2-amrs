@@ -10,13 +10,13 @@ import { Subscription } from 'rxjs';
 import {
   UserDefaultPropertiesService
 } from
-  '../user-default-properties/user-default-properties.service';
+    '../user-default-properties/user-default-properties.service';
 import { FormListService } from '../patient-dashboard/common/forms/form-list.service';
 import { AppSettingsService } from '../app-settings';
 import { LocalStorageService } from '../utils/local-storage.service';
 import { FormUpdaterService } from '../patient-dashboard/common/formentry/form-updater.service';
 import { FormOrderMetaDataService }
-from '../patient-dashboard/common/forms/form-order-metadata.service';
+  from '../patient-dashboard/common/forms/form-order-metadata.service';
 import { FormSchemaService } from '../patient-dashboard/common/formentry/form-schema.service';
 import { FormSchemaCompiler } from 'ng2-openmrs-formentry';
 import { FormsResourceService } from '../openmrs-api/forms-resource.service';
@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               private formUpdaterService: FormUpdaterService,
               private formsResourceService: FormsResourceService,
               private onlineTrackerService: OnlineTrackerService
-              ) {
+  ) {
   }
 
   public ngOnInit() {
@@ -104,10 +104,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     let currentRoute = window.location.toString();
 
     if (this.onlineTrackerService.isOnline) {
-      if (this.checkBox.checked === true) {
-        this.storeCredentialsCheckboxChecked = true;
+      // if (this.checkBox.checked === true) {
+      // this.storeCredentialsCheckboxChecked = true;
+      // }
+      if (this.storeCredentialsCheckboxChecked === true) {
+        this.authenticationService.authenticateAndSave(username, password, true);
       }
-      this.busy = this.authenticationService.authenticate(username, password)
+      this.busy = this.authenticationService.authenticate(username, password, false)
         .subscribe(
           (response: Response) => {
             let data = response.json();
@@ -218,5 +221,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   public clearAndFocusPassword( ) {
     this.passwordField.first.nativeElement.focus();
     this.passwordField.first.nativeElement.value = '';
+  }
+  public checkTheCheckbox(event) {
+    if (event.target.checked) {
+      console.log ('this is checked');
+      this.storeCredentialsCheckboxChecked = true;
+    }
   }
 }
