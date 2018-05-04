@@ -45,8 +45,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   public subscribeToTimer: boolean = true;
   public showCheckbox: boolean = false;
   public storeCredentialsCheckboxChecked: boolean;
-  public checkBoxElement = document.getElementById('storeCredentialsOfflineCheckbox');
-  public checkBox = this.checkBoxElement as HTMLInputElement;
 
   @ViewChildren('password') public passwordField;
 
@@ -104,9 +102,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     let currentRoute = window.location.toString();
 
     if (this.onlineTrackerService.isOnline) {
-      // if (this.checkBox.checked === true) {
-      // this.storeCredentialsCheckboxChecked = true;
-      // }
       if (this.storeCredentialsCheckboxChecked === true) {
         this.authenticationService.authenticateAndSave(username, password, true);
       }
